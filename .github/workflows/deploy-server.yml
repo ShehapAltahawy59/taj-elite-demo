@@ -12,7 +12,7 @@ jobs:
 
     env:
       SERVER_IP: 173.212.251.191
-      WEB_ROOT: /var/www/taj-elite
+      WEB_ROOT: /var/www/taj-elite-demo
       APP_PORT: 8010
 
     steps:
@@ -39,6 +39,9 @@ jobs:
           done
           # staging copy: keep it out of search results (the real site lives on taj-elite.com)
           cp .deploy/serve.json dist/serve.json
+          # mark every page of this server copy as a demo (label sits next to the logo)
+          find dist -name index.html -exec sed -i 's#<a class="brand"#<span class="demo-tag">DEMO</span><a class="brand"#' {} +
+          echo "Demo labels: $(grep -rl 'class="demo-tag"' dist | wc -l)"
           echo "Pages: $(find dist -name index.html | wc -l)"
 
       - name: Install SSH client
@@ -49,16 +52,16 @@ jobs:
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_PASS: ${{ secrets.SERVER_PASS }}
         run: |
-          sshpass -p "$SERVER_PASS" scp -o StrictHostKeyChecking=no .deploy/deploy-frontend.sh "$SERVER_USER@$SERVER_IP:/tmp/deploy-taj-elite.sh"
-          sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "rm -rf /tmp/taj-elite-dist && mkdir -p /tmp/taj-elite-dist"
-          sshpass -p "$SERVER_PASS" scp -o StrictHostKeyChecking=no -r dist/* "$SERVER_USER@$SERVER_IP:/tmp/taj-elite-dist/"
+          sshpass -p "$SERVER_PASS" scp -o StrictHostKeyChecking=no .deploy/deploy-frontend.sh "$SERVER_USER@$SERVER_IP:/tmp/deploy-taj-elite-demo.sh"
+          sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" "rm -rf /tmp/taj-elite-demo-dist && mkdir -p /tmp/taj-elite-demo-dist"
+          sshpass -p "$SERVER_PASS" scp -o StrictHostKeyChecking=no -r dist/* "$SERVER_USER@$SERVER_IP:/tmp/taj-elite-demo-dist/"
           sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_IP" \
-            "chmod +x /tmp/deploy-taj-elite.sh && \
+            "chmod +x /tmp/deploy-taj-elite-demo.sh && \
              WEB_ROOT='$WEB_ROOT' \
              SERVER_USER='$SERVER_USER' \
-             BUILD_DIR='/tmp/taj-elite-dist' \
+             BUILD_DIR='/tmp/taj-elite-demo-dist' \
              APP_PORT='$APP_PORT' \
-             /tmp/deploy-taj-elite.sh"
+             /tmp/deploy-taj-elite-demo.sh"
 
       - name: Check the site responds
         run: |
@@ -66,4 +69,5 @@ jobs:
           curl -fsS -o /dev/null -w "Public check: HTTP %{http_code}\n" "http://${SERVER_IP}:${APP_PORT}/" || echo "Port ${APP_PORT} may be closed in the server firewall (see README)."
 
       - name: Publish service URL
-        run: echo "Site URL: http://${SERVER_IP}:${APP_PORT}" >> $GITHUB_STEP_SUMMARY
+        run: |
+          echo "Site URL: http://${SERVER_IP}:${APP_PORT}" >> $GITHUB_STEP_SUMMARY

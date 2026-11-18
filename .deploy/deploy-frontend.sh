@@ -6,11 +6,11 @@ set -euo pipefail
 # files in $WEB_ROOT, served by `serve` as a systemd service on $APP_PORT.
 # It does not touch Turathna's service (port 8004) or its nginx config.
 
-WEB_ROOT="${WEB_ROOT:-/var/www/taj-elite}"
+WEB_ROOT="${WEB_ROOT:-/var/www/taj-elite-demo}"
 SERVER_USER="${SERVER_USER:?SERVER_USER is required}"
-BUILD_DIR="${BUILD_DIR:-/tmp/taj-elite-dist}"
+BUILD_DIR="${BUILD_DIR:-/tmp/taj-elite-demo-dist}"
 APP_PORT="${APP_PORT:-8010}"
-SERVICE_NAME="taj-elite-frontend.service"
+SERVICE_NAME="taj-elite-demo.service"
 
 echo "Starting deployment..."
 echo "Web Root: $WEB_ROOT"
@@ -53,7 +53,7 @@ rm -rf "$BUILD_DIR"
 echo "Writing systemd service..."
 sudo tee "/etc/systemd/system/$SERVICE_NAME" > /dev/null <<EOF
 [Unit]
-Description=Taj Elite Website
+Description=Taj Elite Website (demo)
 After=network.target
 
 [Service]

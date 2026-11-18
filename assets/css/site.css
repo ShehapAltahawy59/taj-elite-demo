@@ -511,3 +511,6 @@ form .hint{grid-column:1/-1;font-size:.85rem;color:var(--on-deep-muted);text-ali
 .svc-offer b{padding:4px 10px;border-radius:999px;background:var(--accent);color:var(--on-accent);font-size:.78rem}
 .svc-offer strong{color:var(--on-deep);font-weight:600}
 .svc-offer .ends{color:var(--glow);margin-inline-start:auto}
+
+/* "DEMO" label — inserted only into the server demo copy by the deploy workflow */
+.demo-tag{flex:none;order:-1;padding:4px 10px;border-radius:999px;border:1px solid var(--glow);color:var(--glow);font:600 .72rem/1 var(--f-body);letter-spacing:.12em}
