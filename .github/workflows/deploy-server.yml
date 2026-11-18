@@ -13,7 +13,7 @@ jobs:
     env:
       SERVER_IP: 173.212.251.191
       WEB_ROOT: /var/www/taj-elite-demo
-      APP_PORT: 8010
+      APP_PORT: 8020
 
     steps:
       - name: Checkout code

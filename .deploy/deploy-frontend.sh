@@ -9,7 +9,7 @@ set -euo pipefail
 WEB_ROOT="${WEB_ROOT:-/var/www/taj-elite-demo}"
 SERVER_USER="${SERVER_USER:?SERVER_USER is required}"
 BUILD_DIR="${BUILD_DIR:-/tmp/taj-elite-demo-dist}"
-APP_PORT="${APP_PORT:-8010}"
+APP_PORT="${APP_PORT:-8020}"
 SERVICE_NAME="taj-elite-demo.service"
 
 echo "Starting deployment..."
