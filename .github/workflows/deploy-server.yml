@@ -50,6 +50,9 @@ jobs:
       - name: Point links at the sub-path
         run: python tools/rebase.py dist "$BASE_PATH"
 
+      - name: Version CSS/JS links (cache-busting)
+        run: python tools/fingerprint.py dist
+
       - name: Install SSH client
         run: sudo apt-get update && sudo apt-get install -y sshpass
 
