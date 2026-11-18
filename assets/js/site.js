@@ -24,6 +24,9 @@
       mb.setAttribute('aria-expanded', open);
       mb.setAttribute('aria-label', open ? 'إغلاق القائمة' : 'فتح القائمة');
       document.body.style.overflow = open ? 'hidden' : '';
+      hdr && hdr.classList.toggle('menu-open', open);
+      htmlEl.classList.toggle('menu-open', open);
+      const use = mb.querySelector('use'); use && use.setAttribute('href', open ? '#i-close' : '#i-menu');
       window.__lenis && (open ? __lenis.stop() : __lenis.start());
     });
     nav.addEventListener('click', e => { if (e.target.closest('a') && nav.classList.contains('open')) mb.click(); });
