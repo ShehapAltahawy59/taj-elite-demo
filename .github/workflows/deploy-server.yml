@@ -14,6 +14,9 @@ jobs:
       SERVER_IP: 173.212.251.191
       WEB_ROOT: /var/www/taj-elite-demo
       APP_PORT: 8020
+      # public address: nginx (HTTPS, Certbot) forwards this path to 127.0.0.1:APP_PORT
+      PUBLIC_HOST: 173.212.251.191.sslip.io
+      BASE_PATH: /taj-elite-demo
 
     steps:
       - name: Checkout code
@@ -44,6 +47,9 @@ jobs:
           echo "Demo labels: $(grep -rl 'class="demo-tag"' dist | wc -l)"
           echo "Pages: $(find dist -name index.html | wc -l)"
 
+      - name: Point links at the sub-path
+        run: python tools/rebase.py dist "$BASE_PATH"
+
       - name: Install SSH client
         run: sudo apt-get update && sudo apt-get install -y sshpass
 
@@ -63,11 +69,12 @@ jobs:
              APP_PORT='$APP_PORT' \
              /tmp/deploy-taj-elite-demo.sh"
 
-      - name: Check the site responds
+      - name: Check the site responds over HTTPS
         run: |
           sleep 3
-          curl -fsS -o /dev/null -w "Public check: HTTP %{http_code}\n" "http://${SERVER_IP}:${APP_PORT}/" || echo "Port ${APP_PORT} may be closed in the server firewall (see README)."
+          curl -fsS -o /dev/null -w "HTTPS check: HTTP %{http_code}\n" "https://${PUBLIC_HOST}${BASE_PATH}/" \
+            || echo "Not reachable yet: add the /taj-elite-demo/ block to the nginx config on the server."
 
       - name: Publish service URL
         run: |
-          echo "Site URL: http://${SERVER_IP}:${APP_PORT}" >> $GITHUB_STEP_SUMMARY
+          echo "Site URL: https://${PUBLIC_HOST}${BASE_PATH}/" >> $GITHUB_STEP_SUMMARY

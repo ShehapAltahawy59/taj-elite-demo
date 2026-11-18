@@ -2,9 +2,10 @@
 set -euo pipefail
 
 # Deployment script for the Taj Elite site (static HTML).
-# Runs on the remote server via SSH, same setup as Turathna:
-# files in $WEB_ROOT, served by `serve` as a systemd service on $APP_PORT.
-# It does not touch Turathna's service (port 8004) or its nginx config.
+# Runs on the remote server via SSH: files in $WEB_ROOT, served by `serve` as a
+# systemd service on 127.0.0.1:$APP_PORT (local only). The public HTTPS address is
+# https://173.212.251.191.sslip.io/taj-elite-demo/ via the shared nginx config.
+# It does not touch any other app's service or the nginx config.
 
 WEB_ROOT="${WEB_ROOT:-/var/www/taj-elite-demo}"
 SERVER_USER="${SERVER_USER:?SERVER_USER is required}"
@@ -67,7 +68,7 @@ After=network.target
 Type=simple
 User=$SERVER_USER
 WorkingDirectory=$WEB_ROOT
-ExecStart=$SERVE_BIN $WEB_ROOT -l $APP_PORT --no-clipboard
+ExecStart=$SERVE_BIN $WEB_ROOT -l tcp://127.0.0.1:$APP_PORT --no-clipboard
 Restart=always
 RestartSec=10
 StandardOutput=journal
