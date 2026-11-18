@@ -33,9 +33,16 @@ if ! command -v serve &> /dev/null; then
 fi
 SERVE_BIN="$(command -v serve)"
 
-# Make sure the port is not already taken by something else
-if sudo ss -ltnp | grep -q ":$APP_PORT " && ! sudo ss -ltnp | grep ":$APP_PORT " | grep -q serve; then
-  echo "Port $APP_PORT is used by another process. Pick another APP_PORT."; exit 1
+# Make sure the port is free, or held by this site's own service (a redeploy).
+# `serve` runs as a node process, so match on our service's PID, not on the name.
+PORT_LINE="$(sudo ss -ltnpH "sport = :$APP_PORT" || true)"
+if [ -n "$PORT_LINE" ]; then
+  OUR_PID="$(systemctl show -p MainPID --value "$SERVICE_NAME" 2>/dev/null || echo 0)"
+  if [ -z "$OUR_PID" ] || [ "$OUR_PID" = "0" ] || ! grep -q "pid=$OUR_PID," <<< "$PORT_LINE"; then
+    echo "Port $APP_PORT is used by another process:"; echo "$PORT_LINE"
+    echo "Pick another APP_PORT."; exit 1
+  fi
+  echo "Port $APP_PORT is held by $SERVICE_NAME (pid $OUR_PID); redeploying."
 fi
 
 if [ ! -d "$BUILD_DIR" ]; then
