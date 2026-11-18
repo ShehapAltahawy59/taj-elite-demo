@@ -2,7 +2,24 @@
 /* Five natural palettes. Each one: a deep tone (dark sections), a stone/paper ground,
    one restrained metal or mineral accent, and the warm "glow" of the facade's arch lights.
    --accent is for use on dark grounds, --accent-ink is the same hue deepened for text on light grounds. */
-:root,[data-theme="stone"]{     /* Limestone & bronze */
+/* Dental palettes (default): clinical teal and enamel blue, drawn from the logo's mint/blue */
+:root,[data-theme="teal"]{      /* Clinical teal & aqua — default */
+  --deep:#0F2628; --deep-2:#142F31; --deep-3:#1C3B3D;
+  --bg:#EBF1F0; --surface:#F7FAF9;
+  --text:#0F2628; --muted:#4E6163;
+  --on-deep:#EAF2F1; --on-deep-muted:#A3B8B7;
+  --accent:#7FD1C1; --accent-ink:#1F6E63; --on-accent:#0F2628;
+  --glow:#D9BE86;
+}
+[data-theme="ice"]{             /* Enamel blue */
+  --deep:#12203A; --deep-2:#182845; --deep-3:#213357;
+  --bg:#ECF0F5; --surface:#F8FAFC;
+  --text:#12203A; --muted:#4F5B70;
+  --on-deep:#EDF1F7; --on-deep-muted:#A6B1C5;
+  --accent:#A8C8EC; --accent-ink:#2F5A8C; --on-accent:#12203A;
+  --glow:#D6BC88;
+}
+[data-theme="stone"]{           /* Limestone & bronze */
   --deep:#1D1A17; --deep-2:#25211D; --deep-3:#302A25;
   --bg:#ECEAE5; --surface:#F8F7F4;
   --text:#1D1A17; --muted:#5C564E;

@@ -184,13 +184,13 @@ def icon(name):
 def head(title, desc, path, extra_ld=()):
     ld = "".join(f'\n<script type="application/ld+json">{json.dumps(x, ensure_ascii=False)}</script>' for x in extra_ld)
     return f'''<!doctype html>
-<html lang="ar" dir="rtl" data-theme="stone">
+<html lang="ar" dir="rtl" data-theme="teal">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{E(title)}</title>
 <meta name="description" content="{E(desc)}">
-<meta name="theme-color" content="#1D1A17">
+<meta name="theme-color" content="#0F2628">
 <script>try{{var t=localStorage.getItem("taj-theme");if(t)document.documentElement.dataset.theme=t}}catch(e){{}}</script>
 <link rel="canonical" href="{SITE}{path}">
 <meta property="og:type" content="website">

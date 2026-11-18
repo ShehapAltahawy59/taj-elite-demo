@@ -104,7 +104,7 @@
     });
     document.addEventListener('click', e => { if (!e.target.closest('.theme')) setPop(false); });
     addEventListener('keydown', e => { if (e.key === 'Escape' && tPop.classList.contains('open')) { setPop(false); tBtn.focus(); } });
-    applyTheme(htmlEl.dataset.theme || 'stone', false);
+    applyTheme(htmlEl.dataset.theme || 'teal', false);
   }
 
   /* smooth, weighted scrolling on desktop (touch keeps native momentum) */
