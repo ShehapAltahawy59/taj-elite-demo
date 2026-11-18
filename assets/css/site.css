@@ -514,3 +514,56 @@ form .hint{grid-column:1/-1;font-size:.85rem;color:var(--on-deep-muted);text-ali
 
 /* "DEMO" label — inserted only into the server demo copy by the deploy workflow */
 .demo-tag{flex:none;order:-1;padding:4px 10px;border-radius:999px;border:1px solid var(--glow);color:var(--glow);font:600 .72rem/1 var(--f-body);letter-spacing:.12em}
+
+/* =====================================================================
+   Reviews: one featured quote at a time + portrait collage
+   ===================================================================== */
+.rvx{display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(40px,6vw,104px);align-items:center}
+.rvx-main h2{font-size:var(--step-3);margin:12px 0 clamp(24px,4vw,40px)}
+.rvx-stage{position:relative;display:grid;padding-top:64px}
+.rvx-stage::before{content:"\201D";position:absolute;top:-26px;inset-inline-start:-4px;font:700 9.5rem/1 Georgia,"Times New Roman",serif;color:var(--glow);opacity:.4;pointer-events:none}
+.rvx-q{grid-area:1/1;margin:0;opacity:0;visibility:hidden;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease),visibility 0s linear .7s}
+.rvx-q.on{opacity:1;visibility:visible;transform:none;transition:opacity .8s var(--ease) .1s,transform .8s var(--ease) .1s,visibility 0s}
+.rvx-q blockquote{margin:0;max-width:40rem;font-size:clamp(1.3rem,1.02rem + 1.05vw,1.9rem);font-weight:500;line-height:1.75;color:var(--on-deep)}
+.rvx-q figcaption{display:flex;align-items:center;gap:14px;margin-top:28px}
+.rvx-q b{display:block;font-weight:600;color:var(--on-deep)}
+.rvx-q small{font-size:.86rem;color:var(--on-deep-muted)}
+.rvx .stars{color:var(--glow);letter-spacing:2px}
+.rvx-q .stars{margin-inline-end:6px}
+.av{width:48px;height:48px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--accent);color:var(--on-accent);font:600 1.15rem/1 var(--f-display)}
+.rvx-nav{display:flex;flex-wrap:wrap;gap:14px;margin-top:40px}
+.rvx-dot{position:relative;padding:3px;border-radius:50%;border:1px solid var(--line-dark);background:none;cursor:pointer;transition:border-color .3s,transform .3s var(--ease)}
+.rvx-dot .av{width:42px;height:42px;font-size:1rem;background:var(--deep-3);color:var(--on-deep-muted);transition:background-color .4s,color .4s}
+.rvx-dot:hover{transform:translateY(-3px)}
+.rvx-dot[aria-pressed="true"]{border-color:var(--accent)}
+.rvx-dot[aria-pressed="true"] .av{background:var(--accent);color:var(--on-accent)}
+.rvx-dot i{position:absolute;inset-inline:8px;bottom:-10px;height:2px;border-radius:2px;background:var(--accent);transform:scaleX(0);transform-origin:right}
+.rvx.playing .rvx-dot[aria-pressed="true"] i{animation:rvxbar var(--rvx-ms,7000ms) linear forwards}
+@keyframes rvxbar{to{transform:scaleX(1)}}
+.rvx .rv-src{margin-top:32px}
+
+.rvx-visual{position:relative;justify-self:center;width:100%;max-width:360px;padding-bottom:44px}
+.rvx-arch{aspect-ratio:3/4;border-radius:100vmax 100vmax 18px 18px;overflow:hidden;background:var(--deep-3);box-shadow:0 0 0 1px color-mix(in srgb,var(--glow) 45%,transparent),0 0 60px -18px color-mix(in srgb,var(--glow) 35%,transparent),0 40px 80px -30px rgba(0,0,0,.6)}
+.rvx-arch img{width:100%;height:100%;object-fit:cover;object-position:30% 20%}
+.rvx-score,.rvx-smile{position:absolute;border:1px solid var(--line-dark);background:color-mix(in srgb,var(--deep-2) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 24px 48px -18px rgba(0,0,0,.65)}
+.rvx-score{top:20%;inset-inline-end:-32px;padding:16px 22px;border-radius:18px;text-align:center}
+.rvx-score b{display:block;font:700 2.7rem/1 var(--f-display);color:var(--on-deep)}
+.rvx-score .stars{display:block;margin:8px 0 6px;letter-spacing:3px}
+.rvx-score small{display:block;font-size:.74rem;line-height:1.5;color:var(--on-deep-muted)}
+.rvx-smile{bottom:0;inset-inline-start:-40px;width:64%;padding:6px;border-radius:16px}
+.rvx-smile img{width:100%;aspect-ratio:425/228;object-fit:cover;border-radius:11px}
+.rvx-smile span{display:block;padding:7px 6px 2px;font-size:.75rem;color:var(--on-deep-muted)}
+@media (prefers-reduced-motion:no-preference){
+  .rvx-score{animation:rvxfloat 6s ease-in-out infinite}
+  .rvx-smile{animation:rvxfloat 7.5s ease-in-out -2s infinite}
+}
+@keyframes rvxfloat{50%{transform:translateY(-10px)}}
+@media (max-width:860px){
+  .rvx{grid-template-columns:1fr}
+  .rvx-stage{padding-top:52px}
+  .rvx-stage::before{font-size:7.5rem;top:-20px}
+  .rvx-visual{max-width:min(78vw,300px)}
+  .rvx-score{inset-inline-end:-14px;padding:12px 16px}
+  .rvx-score b{font-size:2.1rem}
+  .rvx-smile{inset-inline-start:-14px}
+}

@@ -134,6 +134,39 @@
     $('#map').innerHTML = '<iframe title="موقع مجمع تاج إيليت على الخريطة" src="https://www.google.com/maps?q=24.59286,46.758461&z=16&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
   });
 
+  /* reviews: one featured quote at a time; auto-advances while visible,
+     pauses on hover/focus, stops for good once the visitor picks a review */
+  $$('[data-reviews]').forEach(root => {
+    const qs = $$('.rvx-q', root), dots = $$('.rvx-dot', root), stage = $('.rvx-stage', root);
+    if (qs.length < 2) return;
+    const MS = 7000;
+    let i = 0, timer = 0, picked = false, visible = false, held = false;
+    root.style.setProperty('--rvx-ms', MS + 'ms');
+    const running = () => !reduced && !picked && visible && !held;
+    function tick() {
+      clearTimeout(timer);
+      root.classList.remove('playing');
+      if (!running()) return;
+      void root.offsetWidth;                 // restart the progress bar animation
+      root.classList.add('playing');
+      timer = setTimeout(() => show(i + 1), MS);
+    }
+    function show(n) {
+      i = (n + qs.length) % qs.length;
+      qs.forEach((q, k) => { q.classList.toggle('on', k === i); q.setAttribute('aria-hidden', k !== i); });
+      dots.forEach((d, k) => d.setAttribute('aria-pressed', k === i));
+      tick();
+    }
+    dots.forEach((d, k) => d.addEventListener('click', () => {
+      picked = true; stage.setAttribute('aria-live', 'polite'); show(k);
+    }));
+    root.addEventListener('mouseenter', () => { held = true; tick(); });
+    root.addEventListener('mouseleave', () => { held = false; tick(); });
+    root.addEventListener('focusin', () => { held = true; tick(); });
+    root.addEventListener('focusout', e => { if (!root.contains(e.relatedTarget)) { held = false; tick(); } });
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; tick(); }, { threshold: 0.35 }).observe(root);
+  });
+
   /* offer countdowns: "ends in N days" in correct Arabic; expired offers remove themselves */
   const days = n => n === 1 ? 'يوم واحد' : n === 2 ? 'يومين' : n <= 10 ? `${n} أيام` : `${n} يومًا`;
   $$('[data-ends]').forEach(el => {

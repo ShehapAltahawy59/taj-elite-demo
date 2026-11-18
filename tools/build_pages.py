@@ -10,7 +10,7 @@ site's URLs (and their search rankings).
 import os, re, json, html
 from urllib.parse import quote
 from content import (DEPTS, DOCTORS, SERVICES, DOCTOR_PAGES, ARTICLES, REDIRECTS,
-                     CARD_IMG, CARD_ORDER, SHORT, OFFERS, OFFERS_SAMPLE, PAYMENTS)
+                     CARD_IMG, CARD_ORDER, SHORT, OFFERS, OFFERS_SAMPLE, PAYMENTS, REVIEWS_TAWFIK)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = "https://taj-elite.com"
@@ -124,6 +124,42 @@ def svc_offer_box(slug):
             f'<span><strong>{money(o["now"])} ريال</strong> بدل <s>{money(o["was"])}</s> · {E(o["unit"])}</span>'
             f'<span class="ends" data-ends="{o["ends"]}">ينتهي {date_ar(o["ends"])}</span></a>')
 
+# ---------------------------------------------------------------- reviews (featured quote carousel)
+def initial(name):
+    ch = name.strip()[0]
+    return ch.upper() if ch.isascii() else ch
+
+def reviews_section(reviews, title="بكلماتهم، كما كتبوها على Google", doctor_key="tawfik",
+                    smile="cases/hollywood-1-after.webp", heading_id="h-rev"):
+    d = DOCTORS[doctor_key]
+    quotes, avatars = [], []
+    for i, (name, text) in enumerate(reviews):
+        on = " on" if i == 0 else ""
+        quotes.append(
+            f'<figure class="rvx-q{on}" id="rvq-{i}" aria-hidden="{"false" if i == 0 else "true"}">'
+            f'<blockquote>{E(text)}</blockquote>'
+            f'<figcaption><span class="av" aria-hidden="true">{E(initial(name))}</span>'
+            f'<span><b>{E(name)}</b><small><span class="stars" aria-label="٥ من ٥">★★★★★</span> مراجعة على Google</small></span></figcaption></figure>')
+        avatars.append(
+            f'<button type="button" class="rvx-dot{on}" aria-controls="rvq-{i}" aria-pressed="{"true" if i == 0 else "false"}" '
+            f'aria-label="مراجعة {E(name)}"><span class="av">{E(initial(name))}</span><i></i></button>')
+    return f'''<section class="reviews dark" aria-labelledby="{heading_id}">
+  <div class="wrap rvx" data-reviews>
+    <div class="rvx-main">
+      <span class="eyebrow">آراء المراجعين</span>
+      <h2 id="{heading_id}">{E(title)}</h2>
+      <div class="rvx-stage" aria-live="off">{"".join(quotes)}</div>
+      <div class="rvx-nav" role="group" aria-label="اختر مراجعة">{"".join(avatars)}</div>
+      <p class="rv-src">مراجعات منشورة على صفحة المجمع في خرائط Google، منقولة كما هي مع تصحيح إملائي بسيط.</p>
+    </div>
+    <div class="rvx-visual rv-in" aria-hidden="true">
+      <div class="rvx-arch"><img src="/assets/img/{d["img"]}" width="640" height="640" loading="lazy" decoding="async" alt=""></div>
+      <div class="rvx-score"><b>5.0</b><span class="stars">★★★★★</span><small>تقييم كل المراجعات<br>المعروضة هنا</small></div>
+      <div class="rvx-smile"><img src="/assets/img/{smile}" width="425" height="228" loading="lazy" decoding="async" alt=""><span>من حالات {E(d["name"])}</span></div>
+    </div>
+  </div>
+</section>'''
+
 def inject_index():
     s = open(INDEX_PATH, encoding="utf-8").read()
     def put(name, html_):
@@ -136,6 +172,7 @@ def inject_index():
     put("CARDS:surg", text_rows(CARD_ORDER["surg"]))
     put("CARDS:cos", text_rows(CARD_ORDER["cos"]))
     put("OFFERS", offers_section())
+    put("REVIEWS", reviews_section(REVIEWS_TAWFIK))
     open(INDEX_PATH, "w", encoding="utf-8").write(s)
 
 def wa(text):
@@ -394,15 +431,7 @@ def doctor_page(p):
     if p.get("cases"):
         out.append(cases_block(sec, p["cases"], f'حالات {d["name"]}'))
     if p.get("reviews"):
-        cards = "".join(f'<article class="rv"><div class="stars" aria-label="٥ من ٥">★★★★★</div><blockquote>{E(t)}</blockquote>'
-                        f'<footer><b>{E(n)}</b><span>مراجعة Google</span></footer></article>' for n, t in p["reviews"])
-        out.append(f'''<section class="reviews dark">
-  <div class="wrap">
-    <div class="sec-head rv-in"><span class="eyebrow">آراء المراجعين</span><h2>بكلماتهم، كما كتبوها على Google</h2></div>
-    <div class="rv-track" tabindex="0" aria-label="مراجعات المراجعين، مرّر أفقيًا">{cards}</div>
-    <p class="rv-src">مراجعات منشورة على صفحة المجمع في خرائط Google، منقولة كما هي مع تصحيح إملائي بسيط.</p>
-  </div>
-</section>''')
+        out.append(reviews_section(p["reviews"], doctor_key=p["key"], smile="cases/hollywood-2-after.webp"))
     out.append(cta_band(wa_text, f'احجز استشارتك مع {d["name"]}'))
     out.append(tail())
     write(d["slug"], "\n".join(out))
